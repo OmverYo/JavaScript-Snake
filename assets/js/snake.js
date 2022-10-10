@@ -14,11 +14,12 @@ main();
 function main() {
     setTimeout(function onTick() {
         drawCanvas();
+        drawApple();
         moveSnake();
         drawSnake();
         main();
-    }, 100)
-};
+    }, 500)
+}
 
 function drawCanvas() {
     // Draws the game secttion
@@ -63,17 +64,19 @@ function drawSnakeTails(snakeTails) {
     context.strokeRect(snakeTails.xPosition, snakeTails.yPosition, snakePixel, snakePixel);
 }
 
-// Fnction to draw the apple
+// Function to draw the apple
 function drawApple() {
     // Draws the apple
     context.fillStyle = "red";
     context.fillRect(apple.xPosition, apple.yPosition, snakePixel, snakePixel);
+    context.strokeStyle = "#800000";
     context.strokeRect(apple.xPosition, apple.yPosition, snakePixel, snakePixel);
 }
 
 // Activates snake's movement
 function moveSnake() {
-    const head = { x: snake.snakeSize[0].xPosition + snake.xVelocity, y: snake.snakeSize[0].yPosition + snake.yVelocity };
+    const head = { xPosition: snake.snakeSize[0].xPosition + snake.xVelocity, 
+        yPosition: snake.snakeSize[0].yPosition + snake.yVelocity };
     snake.snakeSize.unshift(head);
     snake.snakeSize.pop();
 }
