@@ -5,13 +5,21 @@ var context = canvas.getContext("2d");
 // Initial game score
 let score = 0;
 
+// Prevents direction change
+let changingDirection = false;
+
 // Declares the pixels of snake bodies
 const snakePixel = 20;
 
 // Start game
 main();
 
+document.addEventListener("keydown", changeDirection);
+
 function main() {
+    if (has_game_ended()) return;
+
+    changingDirection = false;
     setTimeout(function onTick() {
         drawCanvas();
         drawApple();
@@ -75,8 +83,58 @@ function drawApple() {
 
 // Activates snake's movement
 function moveSnake() {
-    const head = { xPosition: snake.snakeSize[0].xPosition + snake.xVelocity, 
-        yPosition: snake.snakeSize[0].yPosition + snake.yVelocity };
+    const head = {
+        xPosition: snake.snakeSize[0].xPosition + snake.xVelocity,
+        yPosition: snake.snakeSize[0].yPosition + snake.yVelocity
+    };
     snake.snakeSize.unshift(head);
     snake.snakeSize.pop();
+}
+
+// Enable the player move the snake using the arrow keys
+function changeDirection(event) {
+    const LEFT_KEY = 37;
+    const RIGHT_KEY = 39;
+    const UP_KEY = 38;
+    const DOWN_KEY = 40;
+
+    if (changingDirection) return;
+    changingDirection = true;
+
+    const keyPressed = event.keyCode;
+    const goingUp = snake.yVelocity === -10;
+    const goingDown = snake.yVelocity === 10;
+    const goingRight = snake.xVelocity === 10;
+    const goingLeft = snake.xVelocity === -10;
+
+    if (keyPressed === LEFT_KEY && !goingRight) {
+        snake.xVelocity = -10;
+        snake.yVelocity = 0;
+    }
+
+    if (keyPressed === UP_KEY && !goingDown) {
+        snake.xVelocity = 0;
+        snake.yVelocity = -10;
+    }
+
+    if (keyPressed === RIGHT_KEY && !goingLeft) {
+        snake.xVelocity = 10;
+        snake.yVelocity = 0;
+    }
+
+    if (keyPressed === DOWN_KEY && !goingUp) {
+        snake.xVelocity = 0;
+        snake.yVelocity = 10;
+    }
+}
+
+function has_game_ended() {
+    for (let i = 4; i < snake.snakeSize.length; i++) {
+        if (snake.snakeSize[i].xPosition === snake.snakeSize[0].xPosition && snake.snakeSize[i].yPosition === snake.snakeSize[0].yPosition) return true
+    }
+    const hitLeftWall = snake.snakeSize[0].xPosition < 0;
+    const hitRightWall = snake.snakeSize[0].xPosition > canvas.width - 10;
+    const hitToptWall = snake.snakeSize[0].yPosition < 0;
+    const hitBottomWall = snake.snakeSize[0].yPosition > canvas.height - 10;
+    return hitLeftWall || hitRightWall || hitToptWall || hitBottomWall
 }
